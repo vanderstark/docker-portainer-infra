@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  npm:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    environment:
+      - TZ=Asia/Jakarta
+    networks:
+      - proxy
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    expose:
+      - "9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../portainer-stack/data:/data
+    environment:
+      - TZ=Asia/Jakarta
+    networks:
+      - proxy
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+networks:
+  proxy:
+    name: proxy-network
